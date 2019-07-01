@@ -2,7 +2,7 @@ use std::io::BufRead;
 
 const PAGELEN: i32 = 24;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let mut _args = Vec::new();
 
     for arg in std::env::args().skip(1) {
@@ -10,13 +10,16 @@ fn main() {
     }
 
     if _args.len() == 0 {
-        println!("hoge");
-    // do_more(std::io::stdin);
+        let stdin = std::io::stdin();
+        do_more(stdin.lock())?;
     } else {
         for arg in &_args {
-            do_more(std::io::BufReader::new(std::fs::File::open(arg).unwrap()));
+            let mut file = std::fs::File::open(arg)?;
+            let mut buffered_reader = std::io::BufReader::new(file);
+            do_more(buffered_reader)?;
         }
     }
+    Ok(())
 }
 
 fn do_more<R>(reader: R) -> std::io::Result<()>
