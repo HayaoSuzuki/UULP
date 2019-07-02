@@ -14,8 +14,8 @@ fn main() -> std::io::Result<()> {
         do_more(stdin.lock())?;
     } else {
         for arg in &_args {
-            let mut file = std::fs::File::open(arg)?;
-            let mut buffered_reader = std::io::BufReader::new(file);
+            let file = std::fs::File::open(arg)?;
+            let buffered_reader = std::io::BufReader::new(file);
             do_more(buffered_reader)?;
         }
     }
