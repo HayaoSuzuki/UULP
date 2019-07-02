@@ -1,4 +1,6 @@
 import sys
+import termios
+import tty
 import typing
 
 PAGELEN = 24
@@ -37,12 +39,18 @@ def see_more() -> int:
     qならば終了、スペースならば次のページ、エンターならば次の行分進める。
     """
     print("\033[7m more? \033[m")
-    c: str = input()
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    try:
+        tty.setcbreak(sys.stdin.fileno())
+        c = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSANOW, old)
     if c == "q":
         return 0
     if c == " ":
         return PAGELEN
-    if c == "":
+    if c == "\n":
         return 1
     return 0
 
